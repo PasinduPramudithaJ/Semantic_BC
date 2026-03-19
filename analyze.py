@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from collections import Counter
+from collections import Counter, defaultdict
 
 # =========================
 # CONFIG
 # =========================
-INPUT_FILE = "results_dep_semantic_2.csv"  # Updated to match the output of the previous script
+INPUT_FILE = "final_results1.csv"  # matches the output of the detection script
 OUTPUT_SUMMARY = "final_summary_full.csv"
 OUTPUT_DIR = "analysis_outputs"
 
@@ -28,11 +28,8 @@ except FileNotFoundError:
 # =========================
 print("[INFO] Cleaning data...")
 df = df.drop_duplicates()
-df = df.dropna(subset=["commit"])  # Ensure commit field exists
-
-# The target column is now a boolean: True/False
-# Ensure it's treated as boolean
-df["semantic_change_detected"] = df["semantic_change_detected"].astype(bool)
+df = df.dropna(subset=["commit"])  # ensure commit field exists
+df["semantic_change"] = df["semantic_change"].astype(bool)
 
 print(f"[INFO] Cleaned Data Shape: {df.shape}")
 
@@ -42,7 +39,7 @@ print(f"[INFO] Cleaned Data Shape: {df.shape}")
 total_file_updates = len(df)
 unique_commits = df["commit"].nunique()
 
-semantic_count = df["semantic_change_detected"].sum()
+semantic_count = df["semantic_change"].sum()
 non_semantic_count = total_file_updates - semantic_count
 
 semantic_percentage = (semantic_count / total_file_updates) * 100 if total_file_updates else 0
@@ -59,8 +56,6 @@ print("===================================\n")
 # RESPONSE ANALYSIS
 # =========================
 print("[INFO] Analyzing developer responses...")
-# Since we have multiple rows per commit (one for each file), 
-# we should drop duplicates by commit to get an accurate count of *commit intentions*
 commits_df = df.drop_duplicates(subset=["commit", "response_type"])
 response_counts = commits_df["response_type"].value_counts()
 response_percentages = (response_counts / len(commits_df)) * 100
@@ -74,7 +69,7 @@ print("========================================================\n")
 # =========================
 # CATEGORY CREATION
 # =========================
-df["bc_category"] = df["semantic_change_detected"].apply(
+df["bc_category"] = df["semantic_change"].apply(
     lambda x: "Semantic Change" if x else "No Semantic Change"
 )
 category_counts = df["bc_category"].value_counts()
@@ -92,12 +87,10 @@ print("================================\n")
 # DETAILED SEMANTIC INSIGHTS
 # =========================
 print("[INFO] Extracting detailed semantic change types...")
-semantic_details = df[df["semantic_change_detected"]]["semantic_change_details"].dropna()
+semantic_details = df[df["semantic_change"]]["semantic_details"].dropna()
 
-# Split the " | " separated strings and count occurrences
 all_changes = []
 for detail in semantic_details:
-    # Remove the count numbers (e.g., "Added imports: 2" -> "Added imports") for cleaner aggregation
     parts = [p.split(":")[0].strip() for p in detail.split(" | ")]
     all_changes.extend(parts)
 
@@ -111,8 +104,7 @@ print("===========================================\n")
 # =========================
 # FILE-LEVEL INSIGHTS
 # =========================
-# Calculate average number of semantically changed files per commit
-semantic_commits = df[df["semantic_change_detected"]].groupby("commit").size()
+semantic_commits = df[df["semantic_change"]].groupby("commit").size()
 avg_files_per_semantic_change = semantic_commits.mean() if not semantic_commits.empty else 0
 
 print("\n========== FILE-LEVEL INSIGHTS ==========")
@@ -164,7 +156,7 @@ plt.close()
 fig, ax = plt.subplots(figsize=(8, 6))
 category_counts.plot(kind="pie", autopct='%1.1f%%', ax=ax, colors=['lightgreen', 'lightcoral'])
 ax.set_title("File Updates: Semantic vs Non-Semantic Changes")
-ax.set_ylabel("") # Hide y-label for pie charts
+ax.set_ylabel("")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bc_distribution.png"))
 plt.close()
@@ -188,7 +180,7 @@ if not change_df.empty:
     ax.set_title("Types of Semantic Changes Detected")
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Change Type")
-    ax.invert_yaxis() # Highest at the top
+    ax.invert_yaxis()
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, "semantic_change_types.png"))
     plt.close()
@@ -208,7 +200,7 @@ if not response_counts.empty:
 
 if "Bug Fix" in response_counts.index:
     print("Developers frequently perform bug fixes alongside dependency updates.")
-    
+
 if not change_df.empty:
     top_change_type = change_df.index[0]
     print(f"When a semantic change happens, the most frequent modification is: '{top_change_type}'")
