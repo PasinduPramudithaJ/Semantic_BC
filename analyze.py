@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 # =========================
 # CONFIG
 # =========================
-INPUT_FILE = "final_results1.csv"  # matches the output of the detection script
+INPUT_FILE = "final_results2.csv"  # matches the output of the detection script
 OUTPUT_SUMMARY = "final_summary_full.csv"
 OUTPUT_DIR = "analysis_outputs"
 

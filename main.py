@@ -12,13 +12,14 @@ from collections import defaultdict
 # CONFIG
 # =========================
 GITHUB_REPOS = [
-   #"https://github.com/apache/commons-lang.git"
+    #"https://github.com/apache/commons-lang.git"
     #"https://github.com/OpenGamma/ElSql.git"
-    "https://github.com/GIScience/oshdb.git"
+    #"https://github.com/GIScience/oshdb.git"
+    "https://github.com/eugenp/tutorials.git"
 ]
 
 WORK_DIR = "repos"
-RESULT_FILE = "final_results1.csv"
+RESULT_FILE = "final_results2.csv"
 
 # =========================
 # CLONE REPO
