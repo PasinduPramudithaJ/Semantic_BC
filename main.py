@@ -9,12 +9,13 @@ import shutil
 # =========================
 GITHUB_REPOS = [
     #"https://github.com/GIScience/oshdb.git",
-    "https://github.com/apache/commons-lang.git",
+    #"https://github.com/apache/commons-lang.git",
     #"https://github.com/apache/commons-logging.git"
+    "https://github.com/kaveeshbhashitha/semantic-test.git"
 ]
 
 WORK_DIR = "repos"
-OUTPUT_DIR = "jars"
+OUTPUT_DIR = "jar"
 NUM_COMMITS = 10  # Process the last N commits
 
 # Maven folder inside project - Ensure this folder exists in your script directory
