@@ -5,12 +5,12 @@ This repository contains Python scripts to analyze GitHub Java projects for **de
 ---
 
 ## Repository Structure
-├── analyze_semantic_dependency.py # Main analysis script
-├── analyze_results.py # Post-processing & visualization script
-├── repos/ # Cloned GitHub repositories
-├── analysis_outputs/ # Output CSVs and figures
-├── results_full_semantic.csv # Full results after AST-based analysis
-└── README.md # Project documentation
+- ├── analyze_semantic_dependency.py # Main analysis script
+- ├── analyze_results.py # Post-processing & visualization script
+- ├── repos/ # Cloned GitHub repositories
+- ├── analysis_outputs/ # Output CSVs and figures
+- ├── results_full_semantic.csv # Full results after AST-based analysis
+- └── README.md # Project documentation
 
 
 ---
